@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="keywords" content="cryptomac, crypto investment"/>
+        <meta name="description" content="Cryptomac, The largest crypto stock trading and investment platform."/>
+        <title>Cryptomac - Login to your account</title>
+        <noscript>
+            <meta http-equiv="refresh" content="20; ../noscript/index.html"/>
+        </noscript>
+        <link rel="stylesheet" href="../styles/css/all.css"/>
+        <link rel="stylesheet" href="../styles/animate.css">
+        <link rel="icon" href="../images/favicon.png" sizes="16x16"/>
+        <link rel="stylesheet" href="../styles/main.css"/>
+        <script type="text/javascript" src="../scripts/jquery.js"></script>
+        <script type="text/javascript" src="../scripts/main.js"></script>
+    </head>
+    <body>
+        <div class="body">
+            <div class="header flex-box">
+                <div class="header-content">
+                    <img src="../images/logo.png" id="logo"/>
+                </div>
+            </div>
+            <div class="form-and-form-nav-cont">
+                <div class="form-nav flex-box">
+                    <a href="../register/" class="text-grey-variant-2-color mini-size centered-text" title="Register to get started">
+                        Register
+                    </a>
+                    <a href="javascript:void(0);" class="text-default-blue-color bg-light-grey mini-size centered-text" title="Login to your account">
+                        Login
+                    </a>
+                </div>
+                <div class="form-cont">
+                    <form action="#login.js" method="POST" enctype="application/x-www-form-urlencoded" name="login-form">
+                        <input type="email" id="email" class="input-section text-grey-variant-2-color" name="email" placeholder="Email address" required/>
+                        <br/>
+                        <input type="password" id="password" class="input-section text-grey-variant-2-color" name="password" placeholder="Password" required/>
+                        <br/>
+                        <ul class="validation-list-text text-grey-variant-2-color">
+                            <li id="email-check">
+                                Wrong email.
+                            </li>
+                            <li id="password-check">
+                                Wrong password.
+                            </li>
+                        </ul>
+                        <br/>
+                        <label for="keep-logged-in" class="text-grey-variant-2-color">
+                            Keep me logged in
+                        </label>
+                        <input type="checkbox" id="keep-logged-in" class="input-type-check-box" checked>
+                        <br/>
+                        <input type="submit" class="input-section default-blue-bg text-white-color" value="Continue" disabled>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--loader template-->
+        <div class="loader-box-cont">
+            <div class="loader-box">
+                <div class="loader-content-cont">
+                    <img id="logo-in-loader" src="../images/favicon.png"/>
+                    <div class="loader-balls-cont flex-box">
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $("*").ready(
+                () => {
+                    const arrayOfInputFields = Array.from($("input"));
+                    const passwordInput = $("#password");
+                    const emailInput = $("#email");
+                    const formSubmitionBtn = arrayOfInputFields[arrayOfInputFields.length -1];
+                    const wrongEmailNotifyer = $("#email-check");
+                    const wrongPasswordNotifyer = $("#password-check");
+                    
+                    let passwordIsLongEnough = false , emailIsEmpty = true , passwordIsWrong = false , emailIsWrong = false;
+
+                    arrayOfInputFields.forEach( e => e.addEventListener("input" , validateFormData) );
+                    arrayOfInputFields.forEach( e => e.addEventListener("blur" , validateFormData) );
+                    arrayOfInputFields.forEach( e => e.addEventListener("focus" , validateFormData) );
+                    arrayOfInputFields.forEach( e => e.addEventListener("change" , validateFormData) );
+                    arrayOfInputFields.forEach( e => e.addEventListener("keyup" , validateFormData) );
+                    
+                    function validateFormData() {
+                        passwordInput.val().trim().length >= 8 ? passwordIsLongEnough = true : passwordIsLongEnough = false;
+
+                        emailInput.val().trim() ==="" ? emailIsEmpty = true : emailIsEmpty = false;
+
+                        if(!passwordIsWrong) {
+                            wrongPasswordNotifyer.css("display","none");
+                        } else {
+                            wrongPasswordNotifyer.css("display","list-item");
+                        }
+
+                        if(!emailIsWrong) {
+                            wrongEmailNotifyer.css("display","none");
+                        } else {
+                            wrongEmailNotifyer.css("display","list-item");
+                        }
+                        
+                        if(!emailIsEmpty && passwordIsLongEnough) {
+                            formSubmitionBtn.disabled = false;
+                        } else {
+                            formSubmitionBtn.disabled = true;
+                        }
+                    }
+                    if(!localStorage) {
+                        alert("Process canceled!\nYour browser does not support local storage or it has been disabled. Enable all cookies and try again");
+                    }
+                    if(localStorage.getItem("credentials")) {
+                        if(JSON.parse(localStorage.getItem("credentials")).verified_email === 0) {
+                            location.assign("../verify");
+                        }
+                        else {
+                            location.assign("../dashboard");
+                        }
+                    }
+                }
+            )
+        </script>
+    </body>
+</html>

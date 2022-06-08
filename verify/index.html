@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="keywords" content="cryptomac, crypto investment"/>
+        <meta name="description" content="Cryptomac, The largest crypto stock trading and investment platform."/>
+        <title>Cryptomac - Verify your email address</title>
+        <noscript>
+            <meta http-equiv="refresh" content="20; ../noscript/index.html"/>
+        </noscript>
+        <link rel="stylesheet" href="../styles/css/all.css"/>
+        <link rel="stylesheet" href="../styles/animate.css">
+        <link rel="icon" href="../images/favicon.png" sizes="16x16"/>
+        <link rel="stylesheet" href="../styles/main.css"/>
+        <script type="text/javascript" src="../scripts/jquery.js"></script>
+        <script type="text/javascript" src="../scripts/main.js"></script>
+    </head>
+    <body>
+        <div class="body">
+            <div class="header flex-box">
+                <div class="header-content">
+                    <img src="../images/logo.png" id="logo"/>
+                </div>
+            </div>
+            <h1 class="centered-text text-grey-variant-2">
+                Verify Email Address
+            </h1>
+            <div class="form-and-form-nav-cont" style="margin-top:-18px;">
+                <div class="form-cont">
+                    <p class="text-grey-variant-2">
+                        A verification code was sent to 
+                        <span class="email-address-cont">you@email.com</span>.
+                        <br/>
+                        <br/>
+                        Please type the verification code to verify your email address.
+                    </p>
+                    <form action="#verify.js" method="POST" enctype="application/x-www-form-urlencoded" name="email-verification-form">
+                        <input type="number" id="verification-code-input" class="input-section text-grey-variant-2-color" name="verification-code-input" placeholder="Verification code" required min="0" maxlength="5" max="99999"/>
+                        <br/>
+                        <ul class="validation-list-text text-grey-variant-2-color">
+                            <li id="wrong-code">
+                                Type valid verification code
+                            </li>
+                        </ul>
+                        <br/>
+                        <p class="text-grey-variant-2-color text-after">
+                            If you haven't received the verification code yet click <a href="javascript:void(0);" class="resend-verification-code-tigger text-default-blue-color bold">resend</a>
+                        </p>
+                        <input type="submit" class="input-section default-blue-bg text-white-color" value="Verify" disabled>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--loader template-->
+        <div class="loader-box-cont">
+            <div class="loader-box">
+                <div class="loader-content-cont">
+                    <img id="logo-in-loader" src="../images/favicon.png"/>
+                    <div class="loader-balls-cont flex-box">
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                        <div class="loader-ball"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $("*").ready(
+                () => {
+                    const arrayOfInputFields = Array.from($("input"));
+                    const verification_code_input = $("#verification-code-input");
+                    const formSubmitionBtn = arrayOfInputFields[arrayOfInputFields.length -1];
+                    const wrongCodeNotifyer = $("#wrong-code");
+                    
+                    let verification_code_input_IsLongEnough = false , verification_code_input_IsEmpty = true;
+
+                    arrayOfInputFields.forEach( e => e.addEventListener("input" , validateFormData) );
+                    
+                    function validateFormData() {
+                        verification_code_input.val().trim().length === 5 ? verification_code_input_IsLongEnough = true : verification_code_input_IsLongEnough = false;
+                        
+                        verification_code_input.val().trim() === "" ? verification_code_input_IsEmpty = true : verification_code_input_IsEmpty = false;
+
+                        if(verification_code_input_IsLongEnough) {
+                            wrongCodeNotifyer.css("color","#00aa00");
+                        } else {
+                            wrongCodeNotifyer.css("color","#c44500");
+                        }
+                        
+                        if(!verification_code_input_IsEmpty && verification_code_input_IsLongEnough ) {
+                            formSubmitionBtn.disabled = false;
+                        } else {
+                            formSubmitionBtn.disabled = true;
+                        }
+                    }
+                    formSubmitionBtn.addEventListener("click",
+                        () => {
+                            $(".loader-box-cont").css("display","flex");
+
+                            //send form data
+                            const xhttp = new XMLHttpRequest();
+                            const credentials = JSON.parse(localStorage.getItem("credentials"));
+                            xhttp.onload = function() {
+                                $(".loader-box-cont").css("display","none");
+                                let response = this.responseText// , pasred_response = JSON.parse(response);
+                                /*
+                                if(localStorage) {
+                                    localStorage.setItem("credentials",response);
+                                    if(pasred_response.verified_email === 0) {
+                                        location.assign("../verify");
+                                    }
+                                    else {
+                                        location.assign("../dashboard");
+                                    }
+                                } else {
+                                    alert("Process canceled!\nYour browser does not support local storage or it has been disabled. Enable all cookies and try again");
+                                }*/
+                            };
+                            xhttp.open("POST","http://localhost:4000/",true);
+                            xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                            xhttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=email-verification-form&verification_code=${verification_code_input.val().trim()}`);
+                        }
+                    );
+                    if(!localStorage) {
+                        alert("Process canceled!\nYour browser does not support local storage or it has been disabled. Enable all cookies and try again");
+                    }
+                 /*   if(localStorage.getItem("credentials")) {
+                        if(JSON.parse(localStorage.getItem("credentials")).verified_email !== 0) {
+                            location.assign("../dashboard");
+                        }
+                    }*/
+                }
+            );
+        </script>
+    </body>
+</html>
