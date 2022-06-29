@@ -1,6 +1,7 @@
 @charset "UTF-8";
 :root {
-    --cryptomac-default-blue: #0066ff;
+    --blue-variant-grad-1 : #9ec1f7;
+    --stackion-default-blue: #0066ff;
     --blue-variant-1:  #136aec;
     --blue-variant-2: #1962cf;
     --blue-variant-3: #115ccc;
@@ -59,6 +60,9 @@ html , body {
 .block {
     display: block;
 }
+.bg-white {
+    background: var(--pure-white);
+}
 .header{
     height: 10vh;
     width: 100%;
@@ -94,10 +98,10 @@ html , body {
     display: none;
 }
 .text-default-blue-color {
-    color: var(--cryptomac-default-blue);
+    color: var(--stackion-default-blue);
 }
 .default-blue-bg {
-    background: var(--cryptomac-default-blue);
+    background: var(--stackion-default-blue);
 }
 .bg-light-grey {
     background: var(--light-grey);
@@ -208,7 +212,7 @@ a {
 }
 .section-title-cont {
     height: 200px;
-    background: var(--cryptomac-default-blue);
+    background: var(--stackion-default-blue);
     padding-top: 30px;
 }
 .section-title-cont p {
@@ -233,7 +237,7 @@ a {
 .section-5 {
     height: 1000px;
     width: 100vw;
-    background: var(--cryptomac-default-blue);
+    background: var(--stackion-default-blue);
     padding-top: 80px;
     clip-path: path("M0 0 L480 80 L480 1000 L0 920 Z");
 }
@@ -305,7 +309,7 @@ a {
 .form-nav {
     height: auto;
     width: 100%;
-    border-bottom: 2px solid var(--cryptomac-default-blue);
+    border-bottom: 2px solid var(--stackion-default-blue);
     margin-bottom: 50px;
 }
 .form-nav a {
@@ -875,7 +879,7 @@ h1 {
         width: 50vw;
         margin: auto;
     }
-    .pilled-coins-and-cryptomac-view-illustration-cont {
+    .pilled-coins-and-stackion-view-illustration-cont {
         display: none;
     }
     .intro-text-in-landing-page {
@@ -917,7 +921,7 @@ h1 {
         flex-flow: row;
         justify-content: space-around;
         align-items: center;
-    }
+    }/*
     * {
         scrollbar-width: 10px;
         scrollbar-color: var(--black-variant-1-alpha-4) var(--black-variant-1-alpha-3);
@@ -932,5 +936,5 @@ h1 {
     }
     ::-webkit-scrollbar-track {
         background: var(--black-variant-1-alpha-3);
-    }
+    }*/
 }
