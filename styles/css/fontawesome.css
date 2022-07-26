@@ -636,7 +636,7 @@ readers do not read off random characters that represent icons */
 .fa-box-tissue:before {
   content: "\e05b"; }
 
-.fa-boxes:before {
+.fa-home:before {
   content: "\f468"; }
 
 .fa-braille:before {

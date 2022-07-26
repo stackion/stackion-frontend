@@ -2,10 +2,81 @@ const date = new Date();
 let currentYear = date.getFullYear();
 const $only = e => document.querySelector(e);
 const $all = e => document.querySelectorAll(e);
+let omcPrice = 0;
+let prc_wss = new WebSocket("ws://localhost:4003/");
+prc_wss.onclose = () => {
+    swal("Opps!","Disconected from server, check network connection","warning",{
+        button : "Okay"
+    })
+    .then(() => setTimeout(() => prc_wss = new WebSocket("ws://localhost:4003/") , 5000));
+};
+prc_wss.onopen = () => {
+    prc_wss.send(JSON.stringify({req_name : "omc-value"}));
+    prc_wss.send(JSON.stringify({req_name : "omc-analysis-chart"}));
+}
+prc_wss.onmessage = (msg) => {
+    let message = JSON.parse(msg.data);
+    if(message.name === "omc-value") {
+        omcPrice = message.omcPrice;
+        if($only(".current-price-of-omc-cont")) $only(".current-price-of-omc-cont").innerText = omcPrice;
+    }
+    if(message.name === "omc-analysis-chart") {
+        let xArray = message.chart_axises.xAxis;
+        let yArray = message.chart_axises.yAxis;
+        if($only("#canvas-statistics-cont")) {
+            new Chart("canvas-statistics-cont", {
+                type : "line",
+                data : {
+                    labels : xArray,
+                    datasets : [{
+                        backgroundColor : "#0022ff11",
+                        borderColor : "#0022ffaa",
+                        data : yArray,
+                        label : "Price vs Day"
+                    }]
+                },
+                options : {}
+            });
+        }
+    }
+};
 
 
 $("*").ready(
     () => {
+        if(localStorage.getItem("dark_theme")) {
+            $(":root").css({
+                "--blue-variant-grad-1": "#9ec1f7",
+                "--stackion-default-blue" : "#0066ffaa",
+                "--blue-variant-1" :  "#136aecaa",
+                "--blue-variant-2" : "#1962cfaa",
+                "--blue-variant-3" : "#115cccaa",
+                "--blue-variant-4" : "#004ec4aa",
+                "--blue-input-shadow" : "#0066ff15",
+                "--light-grey" : "#212121",
+                "--pure-white" : "#101010",
+                "--pure-white-transparency-4" : "#303030ee",
+                "--grey-variant-1" : "#fffef6",
+                "--grey-variant-2" : " #dfdfdf",
+                "--green" : "#35fb75aa",
+                "--orange" : "#ff9800aa",
+                "--purple-variant" : "#ff00b3",
+                "--brown-variant" : "#ff6600",
+                "--reddish-purple" : "#ff2d73",
+                "--black-variant-1" : "#aaaaaa",
+                "--black-variant-1-alpha-3" : "#9c929246",
+                "--black-variant-1-alpha-4" : "#d1d1d1a2",
+                "--scroll-t" : "#303030",
+                "--scroll-tr" : "#808080",
+                "--input-color" : "var(--black-variant-1)"
+            });
+            $(".links-to-buy-and-sell , input[type='submit'], a[href='../trade']").css("color","var(--grey-variant-1)")
+            $("*").css({
+                "scrollbar-color" : "#303030 #808080",
+                "scroll-behaviour" : "smooth",
+            });
+        }
+        
         const sideMenuVisibilityToggleBtn = $(".menu-or-menu-btn-toggle");
         const sideMenu = $(".side-menu");
 
@@ -21,45 +92,22 @@ $("*").ready(
                 }
             }
         )
-
-        let modalState = false;
-
-        class Modal {
-            constructor(type,text) {
-                // supported types are alert and confirm
-                this.mode = "";
-            }
-            show(a,b,c) {
-                $(c + " p").text(a);
-                this.mode = b;
-        
-                this.mode == "alert" ? $(".modal-toggle").html(`
-                    <p class="modal-toggle-btn text-default-blue-color centered-text bold">
-                        Exit
-                    </p>
-                `) : null;
-        
-                if(this.mode == "confirm") {
-                    $(c).html(`
-                        <p class="modal-toggle-btn text-default-blue-color bold" id="yes">
-                            Yes
-                        </p>
-                        <p class="modal-toggle-btn text-reddish-purple-color bold" id="no">
-                            No
-                        </p>
-                    `);
-        
-                    $(".modal-toggle-btn").click( function(e) {
-                        e.target.id == "yes" ? modalState = true : modalState = false;
-                    } )
-                }
-            }
-        }
-        
-        const modal = new Modal();
         //params text,type,element
-        
-        modal.show("Are you sure you want to logout ?",".logout-confirmatory .modal-content-text");
+        const logout_btn = $(".logout-btn");
+
+        logout_btn.click(() => {
+            swal("Are you sure you want to logout ?", {
+                icon : "warning",
+                buttons : ["Cancel" , "Logout"],
+                dangerMode : true
+            })
+            .then((value) => {
+                if(value) {
+                    localStorage.removeItem("credentials");
+                    location.assign("../login");
+                }
+            })
+        })
         
         $(".modal-toggle-btn").click(() => {
             $(".modal-box-cont").css("display","none");
@@ -82,6 +130,12 @@ $("*").ready(
 
         const randomLoaderBallIndex = () => Math.floor(Math.random() * loaderBalls.length);
         const randomPercentage = () => Math.floor(Math.random() * 100 + 1);
+
+        loaderBalls.forEach(
+            e => {
+                e.style.height = randomPercentage() + "%";
+            }
+        )
         
         $(".loader-box-cont").css("display") == "flex" ? function () {
             window.setInterval(
