@@ -1,12 +1,12 @@
 
 $("*").ready(
     () => {
-        let ts_wss = new WebSocket("ws://localhost:4002/");
+        let ts_wss = new WebSocket("wss://transactions.stackion.net/");
         ts_wss.onclose = () => {
             swal("Opps!","Disconected from server, check network connection","warning",{
                 button : "Okay"
             })
-            .then(value => setTimeout(() => ts_wss = new WebSocket("ws://localhost:4002/") , 5000));
+            .then(value => setTimeout(() => ts_wss = new WebSocket("wss://transactions.stackion.net/") , 5000));
         };
 
         const arrayOfInputFields = Array.from($("input"));
@@ -137,7 +137,7 @@ $("*").ready(
                     //create pop up menu to warn client about this using sweetalert.js
                 }
             };
-            xmlHttp.open("POST" , "http://localhost:4001/", true);
+            xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
             xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
             xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
         }

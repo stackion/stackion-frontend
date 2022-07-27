@@ -80,7 +80,7 @@ $("*").ready(
                         }
                     }
                 };
-                xhttp.open("POST","http://localhost:4000/",true);
+                xhttp.open("POST","https://user-authentication.stackion.net/",true);
                 xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                 xhttp.send(`email_address=${emailInput.val().trim()}&password=${passwordInput.val().trim()}&request_name=login-form`);
             }

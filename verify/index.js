@@ -35,7 +35,7 @@ $("*").ready(
         function make_request(data , callback) {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function () { callback(this)};
-            xhttp.open("POST","http://localhost:4000/",true);
+            xhttp.open("POST","https://user-authentication.stackion.net/",true);
             xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             xhttp.send(data);
         }

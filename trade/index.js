@@ -34,7 +34,7 @@ $(document).ready(() => {
                 //create pop up menu to warn client about this using sweetalert.js
             }
         };
-        xmlHttp.open("POST" , "http://localhost:4001/", true);
+        xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
         xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
         xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
     }

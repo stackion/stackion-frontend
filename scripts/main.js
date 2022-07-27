@@ -3,12 +3,12 @@ let currentYear = date.getFullYear();
 const $only = e => document.querySelector(e);
 const $all = e => document.querySelectorAll(e);
 let omcPrice = 0;
-let prc_wss = new WebSocket("ws://localhost:4003/");
+let prc_wss = new WebSocket("wss://price-api.stackion.net/");
 prc_wss.onclose = () => {
     swal("Opps!","Disconected from server, check network connection","warning",{
         button : "Okay"
     })
-    .then(() => setTimeout(() => prc_wss = new WebSocket("ws://localhost:4003/") , 5000));
+    .then(() => setTimeout(() => prc_wss = new WebSocket("wss://price-api.stackion.net/") , 5000));
 };
 prc_wss.onopen = () => {
     prc_wss.send(JSON.stringify({req_name : "omc-value"}));
