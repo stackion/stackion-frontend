@@ -1,12 +1,6 @@
 $("*").ready(
     () => {
-        let ts_wss = new WebSocket("wss://transactions.stackion.net/");
-        ts_wss.onclose = () => {
-            swal("Opps!","Disconected from server, check network connection","warning",{
-                button : "Okay"
-            })
-            .then(value => setTimeout(() => ts_wss = new WebSocket("wss://transactions.stackion.net/") , 5000));
-        };
+        const xmlHttp = new XMLHttpRequest();
         const arrayOfInputFields = Array.from($("input"));
         const formSubmitionBtn = arrayOfInputFields[arrayOfInputFields.length -1];
         const omcInput = $("#amount-to-buy-in-omc");
@@ -30,6 +24,15 @@ $("*").ready(
             location.assign("../login");
         }
 
+        function transact(message , callback) {
+            xmlHttp.onload = function() {
+                let response = this.responseText;
+                callback(response);
+            };
+            xmlHttp.open("POST", "https://transactions.stackion.net/",true);
+            xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xmlHttp.send(`content=${message}`);
+        }
         
         formSubmitionBtn.addEventListener("click" , e => {
             e.preventDefault();
@@ -45,34 +48,32 @@ $("*").ready(
             })
             .then(password => {
                 $(".loader-box-cont").css("display","flex");
-                ts_wss.send(JSON.stringify({
+                transact(JSON.stringify({
                     req_name : "purchase-of-omc",
                     usd_amount : usdInput.val().trim(),
                     transaction_fee : ((usdInput.val() * 10) / 100),
                     email_address : credentials.email_address,
                     password : `${password}`.trim()
-                }));
+                }),
+                response => {
+                    let message = JSON.parse(response);
+                    if((message.auth.email_address === credentials.email_address && message.auth.password === credentials.password) || message.auth.email_address === credentials.email_address) {
+                        if(message.server_res === true) {
+                            swal("Transaction successful","Your purchase of stocks was successful","success");
+                        }
+                        if(message.server_res === "insufficient-funds") {
+                            swal("Insufficient funds","You do not have sufficient funds in your fiat balance for this transaction","warning");
+                        }
+                        if(message.server_res === "incorrect-credentials") {
+                            swal("Incorrect password" , "Try again" , "error");
+                        }
+                        $(".loader-box-cont").css("display","none");
+                    }
+                    fetch_user_data();
+                });
             });
         });
 
-        ts_wss.onmessage = msg => {
-            let message = JSON.parse(msg.data);
-            if((message.auth.email_address === credentials.email_address && message.auth.password === credentials.password) || message.auth.email_address === credentials.email_address) {
-                if(message.server_res === true) {
-                    swal("Transaction successful","Your purchase of stocks was successful","success");
-                }
-                if(message.server_res === "insufficient-funds") {
-                    swal("Insufficient funds","You do not have sufficient funds in your fiat balance for this transaction","warning");
-                }
-                if(message.server_res === "incorrect-credentials") {
-                    swal("Incorrect password" , "Try again" , "error");
-                }
-                $(".loader-box-cont").css("display","none");
-            }
-            fetch_user_data();
-        };
-
-        const xmlHttp = new XMLHttpRequest();
         const fiat_balance_cont = $(".fiat-balance-in-usd-cont");
 
         function fetch_user_data() {

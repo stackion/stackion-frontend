@@ -1,14 +1,7 @@
 
 $("*").ready(
     () => {
-        let ts_wss = new WebSocket("wss://transactions.stackion.net/");
-        ts_wss.onclose = () => {
-            swal("Opps!","Disconected from server, check network connection","warning",{
-                button : "Okay"
-            })
-            .then(value => setTimeout(() => ts_wss = new WebSocket("wss://transactions.stackion.net/") , 5000));
-        };
-
+        const xmlHttp = new XMLHttpRequest();
         const arrayOfInputFields = Array.from($("input"));
         const formSubmitionBtn = arrayOfInputFields[arrayOfInputFields.length -1];
         const omcInput = $("#amount-to-send-in-omc");
@@ -37,6 +30,15 @@ $("*").ready(
             location.assign("../login");
         }
         
+        function transact(message , callback) {
+            xmlHttp.onload = function() {
+                let response = this.responseText;
+                callback(response);
+            };
+            xmlHttp.open("POST", "https://transactions.stackion.net/",true);
+            xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xmlHttp.send(`content=${message}`);
+        }
         formSubmitionBtn.addEventListener("click" , e => {
             e.preventDefault();
             swal("Type password" , {
@@ -51,37 +53,35 @@ $("*").ready(
             })
             .then(password => {
                 $(".loader-box-cont").css("display","flex");
-                ts_wss.send(JSON.stringify({
+                transact(JSON.stringify({
                     req_name : "transfer-of-omc",
                     omc_amount : omcInput.val().trim(),
                     receiver_wallet_address : walletAddressInput.val().trim(),
                     transaction_fee : ((omcInput.val() * 10) / 100),
                     email_address : credentials.email_address,
                     password : `${password}`.trim()
-                }));
+                }) ,
+                response => {
+                    let message = JSON.parse(response);
+                    if((message.auth.email_address === credentials.email_address && message.auth.password === credentials.password) || message.auth.email_address === credentials.email_address) {
+                        if(message.server_res === true) {
+                            swal("Transaction successful","Your transfer of stocks was successful","success");
+                        }
+                        if(message.server_res === "insufficient-funds") {
+                            swal("Insufficient funds","You do not have sufficient funds in your stock balance for this transaction","warning");
+                        }
+                        if(message.server_res === "wrong-receiver") {
+                            swal("Transaction error" , "Check if the wallet address of the receiver is correct" , "error");
+                        }
+                        if(message.server_res === "incorrect-credentials") {
+                            swal("Incorrect password" , "Try again" , "error");
+                        }
+                        $(".loader-box-cont").css("display","none");
+                    }
+                    fetch_user_data();
+                });
             });
         });
-
-        ts_wss.onmessage = msg => {
-            let message = JSON.parse(msg.data);
-            if((message.auth.email_address === credentials.email_address && message.auth.password === credentials.password) || message.auth.email_address === credentials.email_address) {
-                if(message.server_res === true) {
-                    swal("Transaction successful","Your transfer of stocks was successful","success");
-                }
-                if(message.server_res === "insufficient-funds") {
-                    swal("Insufficient funds","You do not have sufficient funds in your stock balance for this transaction","warning");
-                }
-                if(message.server_res === "wrong-receiver") {
-                    swal("Transaction error" , "Check if the wallet address of the receiver is correct" , "error");
-                }
-                if(message.server_res === "incorrect-credentials") {
-                    swal("Incorrect password" , "Try again" , "error");
-                }
-                $(".loader-box-cont").css("display","none");
-            }
-            fetch_user_data();
-        };
-        const xmlHttp = new XMLHttpRequest();
 
         function fetch_user_data() {
             xmlHttp.onload = () => {

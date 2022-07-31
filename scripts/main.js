@@ -3,44 +3,51 @@ let currentYear = date.getFullYear();
 const $only = e => document.querySelector(e);
 const $all = e => document.querySelectorAll(e);
 let omcPrice = 0;
-let prc_wss = new WebSocket("wss://price-api.stackion.net/");
-prc_wss.onclose = () => {
-    swal("Opps!","Disconected from server, check network connection","warning",{
-        button : "Okay"
-    })
-    .then(() => setTimeout(() => prc_wss = new WebSocket("wss://price-api.stackion.net/") , 5000));
-};
-prc_wss.onopen = () => {
-    prc_wss.send(JSON.stringify({req_name : "omc-value"}));
-    prc_wss.send(JSON.stringify({req_name : "omc-analysis-chart"}));
+function track_price(message, callback) {
+    const price_tracker = new XMLHttpRequest();
+    price_tracker.onload = function() {
+        let response = this.responseText;
+        callback(response);
+    };
+    price_tracker.open("POST", "https://price-api.stackion.net/", true);
+    price_tracker.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    price_tracker.send(`content=${message}`);
 }
-prc_wss.onmessage = (msg) => {
-    let message = JSON.parse(msg.data);
-    if(message.name === "omc-value") {
-        omcPrice = message.omcPrice;
-        if($only(".current-price-of-omc-cont")) $only(".current-price-of-omc-cont").innerText = omcPrice;
-    }
-    if(message.name === "omc-analysis-chart") {
-        let xArray = message.chart_axises.xAxis;
-        let yArray = message.chart_axises.yAxis;
-        if($only("#canvas-statistics-cont")) {
-            new Chart("canvas-statistics-cont", {
-                type : "line",
-                data : {
-                    labels : xArray,
-                    datasets : [{
-                        backgroundColor : "#0022ff11",
-                        borderColor : "#0022ffaa",
-                        data : yArray,
-                        label : "Price vs Day"
-                    }]
-                },
-                options : {}
-            });
+function run_price_tracker() {
+    //omc_price
+    track_price(JSON.stringify({req_name : "omc-value"}) , response => {
+        let message = JSON.parse(response);
+        if(message.name === "omc-value") {
+            omcPrice = message.omcPrice;
+            if($only(".current-price-of-omc-cont")) $only(".current-price-of-omc-cont").innerText = omcPrice;
         }
-    }
-};
-
+        //price chart
+        track_price(JSON.stringify({req_name : "omc-analysis-chart"}) , response => {
+            let message = JSON.parse(response);
+            if(message.name === "omc-analysis-chart") {
+                let xArray = message.chart_axises.xAxis;
+                let yArray = message.chart_axises.yAxis;
+                if($only("#canvas-statistics-cont")) {
+                    new Chart("canvas-statistics-cont", {
+                        type : "line",
+                        data : {
+                            labels : xArray,
+                            datasets : [{
+                                backgroundColor : "#0022ff11",
+                                borderColor : "#0022ffaa",
+                                data : yArray,
+                                label : "Price vs Day"
+                            }]
+                        },
+                        options : {}
+                    });
+                }
+            }
+        });
+    });
+}
+run_price_tracker();
+setInterval(() => run_price_tracker(), 50000);
 
 $("*").ready(
     () => {
