@@ -77,7 +77,7 @@ $("*").ready(
                         swal("Session canceled" , "Your browser does not support cookies or it has been disabled. Try enabling all cookies and try again" , "warning");
                     }
                 };
-                xhttp.open("POST","https://user-authentication.stackion.net/",true);
+                xhttp.open("POST","http://localhost:4000/",true);
                 xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                 xhttp.send(`email_address=${emailInput.val().trim()}&password=${passwordInput.val().trim()}&request_name=registration-form`);
             }
