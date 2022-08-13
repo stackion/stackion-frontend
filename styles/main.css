@@ -336,9 +336,10 @@ a {
     margin-top: 50px;
     border-radius: 5px;
 }
-.input-section:not(input[type="submit"]), :-webkit-autofill,
-:-webkit-autofill:hover, 
-:-webkit-autofill:focus {
+/*fix default autofill*/
+.input-section:not(input[type="submit"]), input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
     color: var(--input-color);
     background-color: transparent;
 }

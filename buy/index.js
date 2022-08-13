@@ -77,6 +77,7 @@ $("*").ready(
         const fiat_balance_cont = $(".fiat-balance-in-usd-cont");
 
         function fetch_user_data() {
+            run_price_tracker();
             xmlHttp.onload = () => {
                 let response = xmlHttp.responseText , parsed_response;
                 if(response !== "incorrect-credentials") {
