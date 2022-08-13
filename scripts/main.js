@@ -13,13 +13,16 @@ function track_price(message, callback) {
     price_tracker.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     price_tracker.send(`content=${message}`);
 }
-function run_price_tracker() {
+function run_price_tracker(callback) {
     //omc_price
     track_price(JSON.stringify({req_name : "omc-value"}) , response => {
         let message = JSON.parse(response);
         if(message.name === "omc-value") {
             omcPrice = message.omcPrice;
             if($only(".current-price-of-omc-cont")) $only(".current-price-of-omc-cont").innerText = omcPrice;
+            if(callback) {
+                callback();
+            }
         }
         //price chart
         track_price(JSON.stringify({req_name : "omc-analysis-chart"}) , response => {

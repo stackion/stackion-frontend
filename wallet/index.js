@@ -33,41 +33,42 @@ $("*").ready(
         const xmlHttp = new XMLHttpRequest();
 
         function fetch_user_data() {
-            run_price_tracker();
-            xmlHttp.onload = () => {
-                let response = xmlHttp.responseText , parsed_response;
-                if(response !== "incorrect-credentials") {
-                    parsed_response = JSON.parse(response);
-                    //handling data
-                    totalOfAllAssetsCont.text(((parsed_response.stock_balance * omcPrice) + parsed_response.fiat_balance + parsed_response.pending_withdrawal).toFixed(2))
-                    totalOfAllAssets = ((parsed_response.stock_balance * omcPrice) + parsed_response.fiat_balance + parsed_response.pending_withdrawal).toFixed(2);
-                    yarr[0] = (parsed_response.stock_balance * omcPrice) / totalOfAllAssets * 100;
-                    yarr[1] = parsed_response.fiat_balance / totalOfAllAssets * 100;
-                    
-                    new Chart("pie-chart-representation-of-wallet-constituents-percentege-cont",{
-                        type : "pie",
-                        data : {
-                            labels : xarr,
-                            datasets : [{
-                                backgroundColor : colors,
-                                data : yarr
-                            }]
-                        },
-                        options : {
-                            title : {
-                                display : true,
-                                text : "Percentage"
+            run_price_tracker(()=> {
+                xmlHttp.onload = () => {
+                    let response = xmlHttp.responseText , parsed_response;
+                    if(response !== "incorrect-credentials") {
+                        parsed_response = JSON.parse(response);
+                        //handling data
+                        totalOfAllAssetsCont.text(((parsed_response.stock_balance * omcPrice) + parsed_response.fiat_balance + parsed_response.pending_withdrawal).toFixed(2))
+                        totalOfAllAssets = ((parsed_response.stock_balance * omcPrice) + parsed_response.fiat_balance + parsed_response.pending_withdrawal).toFixed(2);
+                        yarr[0] = (parsed_response.stock_balance * omcPrice) / totalOfAllAssets * 100;
+                        yarr[1] = parsed_response.fiat_balance / totalOfAllAssets * 100;
+                        
+                        new Chart("pie-chart-representation-of-wallet-constituents-percentege-cont",{
+                            type : "pie",
+                            data : {
+                                labels : xarr,
+                                datasets : [{
+                                    backgroundColor : colors,
+                                    data : yarr
+                                }]
+                            },
+                            options : {
+                                title : {
+                                    display : true,
+                                    text : "Percentage"
+                                }
                             }
-                        }
-                    });
-                }
-                else {
-                    //create pop up menu to warn client about this using sweetalert.js
-                }
-            };
-            xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
-            xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
-            xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
+                        });
+                    }
+                    else {
+                        //create pop up menu to warn client about this using sweetalert.js
+                    }
+                };
+                xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
+                xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
+                xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
+            });
         }
         fetch_user_data();
     }

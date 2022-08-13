@@ -21,23 +21,24 @@ $(document).ready(() => {
     const xmlHttp = new XMLHttpRequest();
 
     function fetch_user_data() {
-        run_price_tracker();
-        xmlHttp.onload = () => {
-            let response = xmlHttp.responseText , parsed_response;
-            if(response !== "incorrect-credentials") {
-                parsed_response = JSON.parse(response);
-                //handling data
-                stock_balance_in_omc.text(parsed_response.stock_balance);
-                stock_balance_cont.text(parsed_response.stock_balance * omcPrice)
-                //remember to adjust the price in accordance with the stocks
-            }
-            else {
-                //create pop up menu to warn client about this using sweetalert.js
-            }
-        };
-        xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
-        xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
-        xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
+        run_price_tracker(() => {
+            xmlHttp.onload = () => {
+                let response = xmlHttp.responseText , parsed_response;
+                if(response !== "incorrect-credentials") {
+                    parsed_response = JSON.parse(response);
+                    //handling data
+                    stock_balance_in_omc.text(parsed_response.stock_balance);
+                    stock_balance_cont.text(parsed_response.stock_balance * omcPrice)
+                    //remember to adjust the price in accordance with the stocks
+                }
+                else {
+                    //create pop up menu to warn client about this using sweetalert.js
+                }
+            };
+            xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
+            xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
+            xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
+        });
     }
     fetch_user_data();
 })

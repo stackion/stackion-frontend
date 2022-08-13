@@ -78,69 +78,70 @@ $("*").ready(
         const stock_balance_in_omc = $(".stock-balance-in-omc-cont");
 
         function fetch_user_data() {
-            run_price_tracker();
-            xmlHttp.onload = () => {
-                let response = xmlHttp.responseText , parsed_response;
-                if(response !== "incorrect-credentials") {
-                    parsed_response = JSON.parse(response);
-                    //handling data
-                    stock_balance_in_omc.text(parsed_response.stock_balance);
-                    stock_balance_cont.text(parsed_response.stock_balance * omcPrice);
-                    stockBalanceInOmc = parsed_response.stock_balance;
-                    let stockBalanceInUsd = omcPrice * stockBalanceInOmc;
-                    let maxUsdValue = stockBalanceInUsd - ((stockBalanceInUsd * 10) / 100);
-                    let omcMax = stockBalanceInOmc - ((stockBalanceInOmc * 10) / 100);
-
-                    let omcInputIsEmpty = true , usdInputIsEmpty = true , usdIsNotExceedingUsdMax = true , omcIsNotExceedingomcMax = true , numbersAreValidNumbers = false;
-
-                    arrayOfInputFields.forEach( e => e.addEventListener("input" , e => validateFormData(e.target.id)) );
-
-                    function validateFormData(inputFieldId) {
-                        transaction_fee_cont.text("$ " + ((usdInput.val() * 10) / 100));
-                        omcInput.val() != "" ? omcInputIsEmpty = false : omcInputIsEmpty = true;
-                        usdInput.val() != "" ? usdInputIsEmpty = false : usdInputIsEmpty = true;
-
-                        usdInput.val() >= maxUsdValue ? usdIsNotExceedingUsdMax = false : usdIsNotExceedingUsdMax = true;
-                        omcInput.val() >= omcMax ? omcIsNotExceedingomcMax = false : omcIsNotExceedingomcMax = true;
-
-                        inputFieldId == "amount-to-sell-in-usd" ? processBasedOnUsdMax() : 1 + 1;
-                        inputFieldId == "amount-to-sell-in-omc" ? processBasedOnOmcMax() : 1 + 1;
-
-                        !isNaN(Number(omcInput.val())) && !isNaN(usdInput.val()) ? numbersAreValidNumbers = true : numbersAreValidNumbers = false;
+            run_price_tracker(() => {
+                xmlHttp.onload = () => {
+                    let response = xmlHttp.responseText , parsed_response;
+                    if(response !== "incorrect-credentials") {
+                        parsed_response = JSON.parse(response);
+                        //handling data
+                        stock_balance_in_omc.text(parsed_response.stock_balance);
+                        stock_balance_cont.text(parsed_response.stock_balance * omcPrice);
+                        stockBalanceInOmc = parsed_response.stock_balance;
+                        let stockBalanceInUsd = omcPrice * stockBalanceInOmc;
+                        let maxUsdValue = stockBalanceInUsd - ((stockBalanceInUsd * 10) / 100);
+                        let omcMax = stockBalanceInOmc - ((stockBalanceInOmc * 10) / 100);
+    
+                        let omcInputIsEmpty = true , usdInputIsEmpty = true , usdIsNotExceedingUsdMax = true , omcIsNotExceedingomcMax = true , numbersAreValidNumbers = false;
+    
+                        arrayOfInputFields.forEach( e => e.addEventListener("input" , e => validateFormData(e.target.id)) );
+    
+                        function validateFormData(inputFieldId) {
+                            transaction_fee_cont.text("$ " + ((usdInput.val() * 10) / 100));
+                            omcInput.val() != "" ? omcInputIsEmpty = false : omcInputIsEmpty = true;
+                            usdInput.val() != "" ? usdInputIsEmpty = false : usdInputIsEmpty = true;
+    
+                            usdInput.val() >= maxUsdValue ? usdIsNotExceedingUsdMax = false : usdIsNotExceedingUsdMax = true;
+                            omcInput.val() >= omcMax ? omcIsNotExceedingomcMax = false : omcIsNotExceedingomcMax = true;
+    
+                            inputFieldId == "amount-to-sell-in-usd" ? processBasedOnUsdMax() : 1 + 1;
+                            inputFieldId == "amount-to-sell-in-omc" ? processBasedOnOmcMax() : 1 + 1;
+    
+                            !isNaN(Number(omcInput.val())) && !isNaN(usdInput.val()) ? numbersAreValidNumbers = true : numbersAreValidNumbers = false;
+                            
+                            (numbersAreValidNumbers && !omcInputIsEmpty && !usdInputIsEmpty) ? formSubmitionBtn.disabled = false : formSubmitionBtn.disabled = true;
+                            omcInput.val(Math.abs(Number(omcInput.val())));
+                            usdInput.val(Math.abs(Number(usdInput.val())));
+                        }
+                        function processBasedOnUsdMax() {
+                            if(!usdIsNotExceedingUsdMax) {
+                                usdInput.val(maxUsdValue);
+                                omcInput.val(eval(usdInput.val()) / omcPrice);
+                                maximum.css("display","list-item");
+                            } else {
+                                omcInput.val(eval(usdInput.val()) / omcPrice);
+                                maximum.css("display","none");
+                            }
+                        }
+                        function processBasedOnOmcMax() {
+                            if(!omcIsNotExceedingomcMax) {
+                                omcInput.val(omcMax);
+                                usdInput.val(eval(omcInput.val()) * omcPrice);
+                                maximum.css("display","list-item");
+                            } else {
+                                usdInput.val(eval(omcInput.val()) * omcPrice);
+                                maximum.css("display","none");
+                            }
+                        }
                         
-                        (numbersAreValidNumbers && !omcInputIsEmpty && !usdInputIsEmpty) ? formSubmitionBtn.disabled = false : formSubmitionBtn.disabled = true;
-                        omcInput.val(Math.abs(Number(omcInput.val())));
-                        usdInput.val(Math.abs(Number(usdInput.val())));
                     }
-                    function processBasedOnUsdMax() {
-                        if(!usdIsNotExceedingUsdMax) {
-                            usdInput.val(maxUsdValue);
-                            omcInput.val(eval(usdInput.val()) / omcPrice);
-                            maximum.css("display","list-item");
-                        } else {
-                            omcInput.val(eval(usdInput.val()) / omcPrice);
-                            maximum.css("display","none");
-                        }
+                    else {
+                        //create pop up menu to warn client about this using sweetalert.js
                     }
-                    function processBasedOnOmcMax() {
-                        if(!omcIsNotExceedingomcMax) {
-                            omcInput.val(omcMax);
-                            usdInput.val(eval(omcInput.val()) * omcPrice);
-                            maximum.css("display","list-item");
-                        } else {
-                            usdInput.val(eval(omcInput.val()) * omcPrice);
-                            maximum.css("display","none");
-                        }
-                    }
-                    
-                }
-                else {
-                    //create pop up menu to warn client about this using sweetalert.js
-                }
-            };
-            xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
-            xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
-            xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
+                };
+                xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
+                xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
+                xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
+            });
         }
         fetch_user_data();
 
