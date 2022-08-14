@@ -20,7 +20,7 @@ function run_price_tracker(callback) {
         if(message.name === "omc-value") {
             omcPrice = message.omcPrice;
             if($only(".current-price-of-omc-cont")) $only(".current-price-of-omc-cont").innerText = omcPrice;
-            callback();
+            if(callback) callback();
         }
         //price chart
         track_price(JSON.stringify({req_name : "omc-analysis-chart"}) , response => {
