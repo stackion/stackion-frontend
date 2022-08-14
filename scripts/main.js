@@ -20,9 +20,7 @@ function run_price_tracker(callback) {
         if(message.name === "omc-value") {
             omcPrice = message.omcPrice;
             if($only(".current-price-of-omc-cont")) $only(".current-price-of-omc-cont").innerText = omcPrice;
-            if(callback) {
-                callback();
-            }
+            callback();
         }
         //price chart
         track_price(JSON.stringify({req_name : "omc-analysis-chart"}) , response => {
@@ -49,8 +47,8 @@ function run_price_tracker(callback) {
         });
     });
 }
-run_price_tracker();
-setInterval(() => run_price_tracker(), 50000);
+run_price_tracker(null);
+setInterval(() => run_price_tracker(null), 50000);
 
 $("*").ready(
     () => {
