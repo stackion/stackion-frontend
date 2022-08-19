@@ -30,7 +30,7 @@ $("*").ready(
                 let response = this.responseText;
                 callback(response);
             };
-            xmlHttp.open("POST", "https://transactions.stackion.net/",true);
+            xmlHttp.open("POST", transactions_server_url,true);
             xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             xmlHttp.send(`content=${message}`);
         }
@@ -138,7 +138,7 @@ $("*").ready(
                         //create pop up menu to warn client about this using sweetalert.js
                     }
                 };
-                xmlHttp.open("POST" , "https://user-data-api.stackion.net/", true);
+                xmlHttp.open("POST" , user_data_api_server, true);
                 xmlHttp.setRequestHeader("Content-type" , "application/x-www-form-urlencoded");
                 xmlHttp.send(`email_address=${credentials.email_address}&password=${credentials.password}&request_name=user-data`)
             });

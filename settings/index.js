@@ -54,7 +54,7 @@ $("*").ready(
                     "--pure-white-transparency-4" : "#ffffffee",
                     "--grey-variant-1" : "#c5c4bb",
                     "--grey-variant-2" : "#504f4f",
-                    "--green" : "#36db70",
+                    "--green" : "#20b144",
                     "--orange" : "#ff9100",
                     "--purple-variant" : "#f75dc8",
                     "--brown-variant" : "#ff6600",

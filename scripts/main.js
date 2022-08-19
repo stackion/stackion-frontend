@@ -9,7 +9,7 @@ function track_price(message, callback) {
         let response = this.responseText;
         callback(response);
     };
-    price_tracker.open("POST", "https://price-api.stackion.net/", true);
+    price_tracker.open("POST", price_api_url, true);
     price_tracker.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     price_tracker.send(`content=${message}`);
 }

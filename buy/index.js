@@ -29,7 +29,7 @@ $("*").ready(
                 let response = this.responseText;
                 callback(response);
             };
-            xmlHttp.open("POST", "https://transactions.stackion.net/",true);
+            xmlHttp.open("POST", transactions_server_url,true);
             xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             xmlHttp.send(`content=${message}`);
         }

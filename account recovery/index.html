@@ -3,19 +3,19 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <meta name="keywords" content="stackion, crypto investment, verify stackion email address, verify email address"/>
-        <meta name="description" content="Verify your email address"/>
-        <title>Stackion - Verify</title>
-        <meta name="og:title" content="Stackion - Verify" />
-        <meta name="og:description" content="Verify your email address" />
+        <meta name="keywords" content="stackion, crypto investment, recover my stackion account, recover account, forgotten password"/>
+        <meta name="description" content="Gain back access to your stackion account"/>
+        <title>Stackion - Account recovery</title>
+        <meta name="og:title" content="Stackion - Account recovery" />
+        <meta name="og:description" content="Gain back access to your stackion account" />
         <meta name="og:site_name" content="Stackion" />
-        <meta name="og:url" content="https://stackion.net/verify" />
+        <meta name="og:url" content="https://stackion.net/account recovery" />
         <meta name="og:type" content="stock trading" />
         <meta name="og:image" content="https://stackion.net/images/social-media/buy.jpg" />
-        <meta property="twitter:url" content="https://stackion.net/verify">
-        <meta property="twitter:description" content="Verify your email address">
+        <meta property="twitter:url" content="https://stackion.net/account recovery">
+        <meta property="twitter:description" content="Gain back access to your stackion account">
         <meta property="twitter:image" content="https://stackion.net/images/social-media/buy.jpg">
-        <meta property="twitter:title" content="Stackion - Verify">
+        <meta property="twitter:title" content="Stackion - Account recovery">
         <noscript>
             <meta http-equiv="refresh" content="20; ../noscript/index.html"/>
         </noscript>
@@ -24,13 +24,14 @@
         <link rel="icon" href="../images/favicon.png" sizes="16x16"/>
         <link rel="stylesheet" href="../styles/main.min.css"/>
         <script type="text/javascript" src="../scripts/jquery.js"></script>
+        <script src="../scripts/url.js"></script>
+        <script>
+            const date = new Date();
+            let currentYear = date.getFullYear();
+            const $only = e => document.querySelector(e);
+            const $all = e => document.querySelectorAll(e);
+        </script>
         <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
-        <script type="text/javascript" src="../scripts/main.js"></script>
-        <style>
-            .email-address-cont {
-                font-weight : bold;
-            }
-        </style>
     </head>
     <body>
         <div class="body">
@@ -39,31 +40,20 @@
                     <img src="../images/logo.png" id="logo"/>
                 </div>
             </div>
-            <h1 class="centered-text text-grey-variant-2-color">
-                Verify Email Address
-            </h1>
-            <div class="form-and-form-nav-cont" style="margin-top:-18px;">
+            <div class="form-and-form-nav-cont">
                 <div class="form-cont">
-                    <p class="text-grey-variant-2-color">
-                        A verification code was sent to 
-                        <span class="email-address-cont">your email address</span>.
-                        <br/>
-                        <br/>
-                        Please type the verification code to verify your email address.
-                    </p>
-                    <form action="#verify.js" method="POST" enctype="application/x-www-form-urlencoded" name="email-verification-form">
-                        <input type="number" id="verification-code-input" class="input-section text-grey-variant-2-color" name="verification-code-input" placeholder="Verification code" required min="0" maxlength="5" max="99999"/>
+                    <form action="#login.js" method="POST" enctype="application/x-www-form-urlencoded" name="login-form">
+                        <p class="text-grey-variant-2-color user-guide smaller-size">
+                            Type in the email address of your account
+                        </p>
+                        <input type="email" id="email" class="input-section text-grey-variant-2-color" name="email" placeholder="Email address" required/>
                         <br/>
                         <ul class="validation-list-text text-grey-variant-2-color">
-                            <li id="wrong-code">
-                                Type valid verification code
+                            <li id="email-check">
+                                An account does not exist for this email address
                             </li>
                         </ul>
-                        <br/>
-                        <p class="text-grey-variant-2-color text-after">
-                            If you haven't received the verification code yet click <a href="javascript:void(0);" class="resend-verification-code-tigger text-default-blue-color bold">resend</a>
-                        </p>
-                        <input type="submit" class="input-section default-blue-bg text-white-color" value="Verify" disabled>
+                        <input type="submit" class="input-section default-blue-bg text-white-color" value="Continue" disabled>
                     </form>
                 </div>
             </div>
@@ -95,7 +85,7 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript" src="./index.obfuscated.js">
+        <script src="./index.js">
         </script>
     </body>
 </html>

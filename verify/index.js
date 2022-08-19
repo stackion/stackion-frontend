@@ -67,7 +67,7 @@ $("*").ready(
         function make_request(data , callback) {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function () { callback(this)};
-            xhttp.open("POST","https://user-authentication.stackion.net/",true);
+            xhttp.open("POST",user_authentication_server,true);
             xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             xhttp.send(data);
         }
