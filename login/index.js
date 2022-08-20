@@ -1,38 +1,6 @@
 
 $("*").ready(
     () => {
-        const loaderBalls = Array.from($(".loader-ball"));
-        
-        $("*").ready(
-            () => {
-                setTimeout(
-                    () => $(".loader-box-cont").css("display","none") , 700
-                );
-            }
-        )
-
-        const randomLoaderBallIndex = () => Math.floor(Math.random() * loaderBalls.length);
-        const randomPercentage = () => Math.floor(Math.random() * 100 + 1);
-
-        loaderBalls.forEach(
-            e => {
-                e.style.height = randomPercentage() + "%";
-            }
-        )
-        
-        $(".loader-box-cont").css("display") == "flex" ? function () {
-            window.setInterval(
-                () => {
-                    loaderBalls[randomLoaderBallIndex()].style.height = randomPercentage() + "%";
-                }, 10
-            );
-        }() : null ;/*
-        $("body").on("load",
-            () => $("body").addClass(["animate__animated" , "animate__slideInRight"])
-        )*/
-        document.body.onbeforeunload = () => {
-            $("body").addClass(["animate__animated" , "animate__fadeOut"])
-        }
         const arrayOfInputFields = Array.from($("input"));
         const passwordInput = $("#password");
         const emailInput = $("#email");
