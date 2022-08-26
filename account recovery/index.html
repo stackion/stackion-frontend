@@ -25,12 +25,7 @@
         <link rel="stylesheet" href="../styles/main.min.css"/>
         <script type="text/javascript" src="../scripts/jquery.js"></script>
         <script src="../scripts/url.js"></script>
-        <script>
-            const date = new Date();
-            let currentYear = date.getFullYear();
-            const $only = e => document.querySelector(e);
-            const $all = e => document.querySelectorAll(e);
-        </script>
+        <script src="../scripts/main.js"></script>
         <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
     </head>
     <body>
@@ -42,24 +37,44 @@
             </div>
             <div class="form-and-form-nav-cont">
                 <div class="form-cont">
-                    <form action="#login.js" method="POST" enctype="application/x-www-form-urlencoded" name="login-form">
+                    <h1 class="text-grey-variant-2-color">
+                        Account recovery
+                    </h1>
+                    <br/>
+                    <form action="#login.js" method="POST" enctype="application/x-www-form-urlencoded" name="recovery-form">
                         <p class="text-grey-variant-2-color user-guide smaller-size">
                             Type in the email address of your account
                         </p>
-                        <input type="email" id="email" class="input-section text-grey-variant-2-color" name="email" placeholder="Email address" required/>
+                        <div class="stage-1">
+                            <input type="email" id="email" class="input-section text-grey-variant-2-color" name="email" placeholder="Email address" required/>
+                        </div>
                         <br/>
-                        <ul class="validation-list-text text-grey-variant-2-color">
-                            <li id="email-check">
-                                An account does not exist for this email address
-                            </li>
-                        </ul>
+                        <div class="stage-2 none">
+                            <input type="number" id="verification-code-input" class="input-section text-grey-variant-2-color" name="verification-code-input" placeholder="Verification code" required min="0" maxlength="5" max="99999"/>
+                        </div>
+                        <div class="stage-3 none">
+                            <input type="password" id="password" class="input-section text-grey-variant-2-color" name="password" placeholder="Password" required/>
+                            <br/>
+                            <ul class="validation-list-text text-grey-variant-2-color password-validator">
+                                <li id="password-length">
+                                    Password must contain at least 8 characters.
+                                </li>
+                                <li id="password-special-characters">
+                                    Password must contain alphabets, numbers and characters like @ or  # or $ or %.
+                                </li>
+                                <li id="password-match">
+                                    Passwords must be the same.
+                                </li>
+                            </ul>
+                            <input type="password" id="retyped-password" placeholder="Retype password" class="input-section text-grey-variant-2-color">
+                        </div>
                         <input type="submit" class="input-section default-blue-bg text-white-color" value="Continue" disabled>
                     </form>
                 </div>
             </div>
         </div>
         <!--loader template-->
-        <div class="loader-box-cont none" style="display:none">
+        <div class="loader-box-cont">
             <div class="loader-box">
                 <div class="loader-content-cont">
                     <img id="logo-in-loader" src="../images/favicon.png"/>

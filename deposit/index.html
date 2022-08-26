@@ -27,6 +27,11 @@
         <script src="../scripts/url.js"></script>
         <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
         <script type="text/javascript" src="../scripts/main.js"></script>
+        <style>
+            .input-section {
+                margin-top: 20px;
+            }
+        </style>
     </head>
     <body>
         <div class="body">
@@ -131,17 +136,23 @@
                         <div class="form-cont">
                             <form action="#deposit.js" method="POST" enctype="application/x-www-form-urlencoded" name="stock-depositing-form">
                                 <p class="text-grey-variant-2-color">
-                                    An email would be sent to you to process the deposit.
+                                    An email would be sent to you to process the deposit if your prefered payment method is cryptocurrency.
                                 </p>
                                 <select name="payment-method" id="payment-method" class="input-section text-grey-variant-2-color">
                                     <option value="">
                                         Payment method
                                     </option>
+                                    <option value="crypto">
+                                        Crypto currency (coinbase)
+                                    </option>
                                 </select>
                                 <br/>
-                                <input type="number" step="0.000000000000001" id="amount-to-deposit-in-usd" class="input-section text-grey-variant-2-color usd-input" name="amount-to-deposit-in-usd" placeholder="0.0" required/>
                                 <br/>
-                                <input type="submit" class="input-section bg-reddish-purple text-white-color" value="deposit" disabled>
+                                <br/><!--pattern="/[0-9]/"-->
+                                <label for="amount-to-deposit-in-usd" class="text-grey-variant-2-color">Amount to deposite in USD</label>
+                                <input type="number" id="amount-to-deposit-in-usd" class="input-section text-grey-variant-2-color usd-input" name="amount-to-deposit-in-usd" placeholder="0.0" required/>
+                                <br/>
+                                <input type="submit" class="input-section bg-reddish-purple text-white-color" value="Deposit" disabled>
                             </form>
                         </div>
                     </div>
@@ -197,5 +208,89 @@
                 </div>
             </div>
         </div>
+        <script>
+            $("*").ready(
+                () => {
+                    //auth
+                    if(!localStorage) {
+                        swal("Session canceled" , "Your browser does not support cookies or it has been disabled. Try enabling all cookies and try again" , "warning");
+                    }
+                    let credentials;
+                    if(localStorage.getItem("credentials")) {
+                        credentials = JSON.parse(localStorage.getItem("credentials"));
+                        if(JSON.parse(localStorage.getItem("credentials")).verified_email === 0) {
+                            location.assign("../verify");
+                        }
+                    }
+                    else {
+                        location.assign("../login");
+                    }
+                    //dom
+                    const payment_method_input = $("#payment-method");
+                    const amount_to_deposit_in_usd_input = $("#amount-to-deposit-in-usd");
+                    const form_submition_btn = $("input[type='submit']");
+                    const inputs = [payment_method_input , amount_to_deposit_in_usd_input];
+                    let amount_is_empty_or_zero = true;
+                    let payment_method_not_chosen = true;
+
+                    function send_data(data, callback) {
+                        $(".loader-box-cont").css("display","flex");
+                        const xhttp = new XMLHttpRequest();
+                        xhttp.onload = function() {
+                            $(".loader-box-cont").css("display","none");
+                            let response = this.responseText;
+                            callback(response);
+                        };
+                        xhttp.open("POST",transactions_server_url,true);
+                        xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                        xhttp.send(data);
+                    }
+
+                    function validate_form_data() {
+                        amount_to_deposit_in_usd_input.val() == "" || amount_to_deposit_in_usd_input.val() == 0 ? amount_is_empty_or_zero = true : amount_is_empty_or_zero = false;
+                        payment_method_input.val() === "" ? payment_method_not_chosen = true : payment_method_not_chosen = false;
+                        !amount_is_empty_or_zero && !payment_method_not_chosen ? form_submition_btn.attr("disabled",false) : form_submition_btn.attr("disabled",true);
+                    }
+
+                    inputs.forEach(e => {
+                        e.on("input" , validate_form_data);
+                        e.on("focus" , validate_form_data);
+                        e.on("blur" , validate_form_data);
+                        e.on("change" , validate_form_data);
+                        e.on("keyup" , validate_form_data);
+                    });
+
+                    form_submition_btn.click(
+                        e => {
+                            e.preventDefault();
+                            if(payment_method_input.val() == "crypto") {
+                                //process for crypto payment
+                                let req_obj = {
+                                    req_name : "deposit",
+                                    usd_amount : amount_to_deposit_in_usd_input.val().trim(),
+                                    email_address : credentials.email_address,
+                                    password : credentials.password,
+                                    method : "crypto"
+                                };
+                                send_data(`content=${JSON.stringify(req_obj)}`,
+                                    response => {
+                                        //
+                                        if(response === "incorrect-credentials") {
+                                            swal("Access denied", "Try logging out and loggin back in then continue the process","error");
+                                        }
+                                        else {
+                                            location.assign(response);
+                                        }
+                                    }
+                                );
+                            }
+                            else {
+                                //process for other payment methods
+                            }
+                        }
+                    );
+                }
+            );
+        </script>
     </body>
 </html>

@@ -156,7 +156,7 @@ $("*").ready(
             () => $("body").addClass(["animate__animated" , "animate__slideInRight"])
         )*/
         document.body.onbeforeunload = () => {
-            $("body").addClass(["animate__animated" , "animate__fadeOut"])
+            $(".loader-box-cont").css("display","flex");
         }
         if($("input[type='submit']")) {
             $("input[type='submit']").click(

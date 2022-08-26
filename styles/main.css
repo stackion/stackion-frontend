@@ -75,6 +75,9 @@ html , body {
     margin-top: 2vh;
     border-bottom: 1px solid var(--light-grey);
 }
+.no-bg {
+    background: none;
+}
 .no-border {
     border: none;
 }
@@ -175,6 +178,12 @@ a {
 }
 .text-reddish-purple-color {
     color: var(--reddish-purple);
+}
+.account-deletion-triggger:active {
+    opacity: 0.2;
+}
+.account-deletion-triggger {
+    cursor: pointer;
 }
 .section-2 {
     margin-top: -60px !important;
@@ -340,6 +349,7 @@ a {
 .input-section:not(input[type="submit"]), input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus {
+    font-size: 15px;
     color: var(--input-color);
     background-color: transparent;
 }
@@ -734,9 +744,15 @@ h1 {
     width: 30px;
 }
 /*media queries*/
-@media only screen and (max-width:360px) {
+@media only screen and (max-width:365px) {
     .asset-display-content {
         height: 180px;
+    }
+    .form-and-form-nav-cont {
+        padding: 10px;
+    }
+    .input-section {
+        height: 45px;
     }
 }
 @media only screen and (min-width:400px) and (max-width:600px) {

@@ -1,6 +1,73 @@
-
 $("*").ready(
     () => {
+        let credentials;
+        if(localStorage.getItem("credentials")) {
+            credentials = JSON.parse(localStorage.getItem("credentials"));
+            if(JSON.parse(localStorage.getItem("credentials")).verified_email === 0) {
+                location.assign("../verify");
+            }
+        }
+        else {
+            location.assign("../login");
+        }
+        function send_data(data, callback) {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() {
+                $(".loader-box-cont").css("display","none");
+                let response = this.responseText;
+                callback(response);
+            };
+            xhttp.open("POST",user_authentication_server,true);
+            xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xhttp.send(`${data}`);
+        }
+        const account_deletion_trigger = $("#account-deletion-triggger");
+        account_deletion_trigger.click(() => {
+            swal("You are about to delete your account","You'll loose your account for life if you continue", "info", {
+                buttons : ["Cancel","Continue"],
+                dangerMode : true
+            })
+            .then(
+                resolvement => {
+                    if(resolvement === true) {
+                        swal("Type password to continue account deletion" , {
+                            content : {
+                                element : "input",
+                                attributes : {
+                                    type : "password",
+                                    placeholder : "*******"
+                                }
+                            },
+                            button : "Delete account",
+                            dangerMode : true
+                        })
+                        .then(
+                            password => {
+                                if(password) {
+                                    $(".loader-box-cont").css("display","flex");
+                                    send_data(`email_address=${credentials.email_address}&password=${password}&request_name=delete-account`, response => {
+                                        if(response == "wrong-password") {
+                                            swal("Wrong password", "Could not delete your account", "error");
+                                        }
+                                        else {
+                                            swal("Deleted","Your account was deleted successfully","success");
+                                            localStorage.removeItem("credentials");
+                                            setTimeout( () => location.assign("../login") , 200);
+                                        }
+                                    })
+                                }
+                                else {
+                                    swal("You didn't type a password",{icon : "info"});
+                                }
+                            }
+                        )
+                    }
+                }
+            );
+        });
+        if(!localStorage) {
+            swal("Session canceled" , "Your browser does not support cookies or it has been disabled. Try enabling all cookies and try again" , "warning");
+        }
         const dark_theme_toggle = $("#dark-theme-toggle");
         if(localStorage.getItem("dark_theme")) {
             dark_theme_toggle.attr("checked",true);
