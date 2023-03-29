@@ -66,16 +66,16 @@ $("*").ready(
                 formSubmitionBtn.disabled = true;
             }
         }
-        function send_data(data, callback) {
+        function send_data(data, path, callback) {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() {
                 $(".loader-box-cont").css("display","none");
                 let response = this.responseText;
                 callback(response);
             };
-            xhttp.open("POST",user_authentication_server,true);
-            xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-            xhttp.send(`${data}&request_name=recovery-form`);
+            xhttp.open("POST","https://user-authentication.stackion.net/" + path,true);
+            xhttp.setRequestHeader("Content-type","application/json");
+            xhttp.send(data);
         }
         formSubmitionBtn.addEventListener("click",
             (event) => {
@@ -84,8 +84,11 @@ $("*").ready(
 
                 //send form data
                 if(stage === 1) {
-                    send_data(`email_address=${emailInput.val().trim()}&stage=1`, response => {
-                        if(response === "resent-code") {
+                    send_data(JSON.stringify({
+                            email : emailInput.val().trim()
+                        }), "check-user-email", response => {
+                        let parsedRes = JSON.parse(response);
+                        if(parsedRes.status === "success") {
                             //continue process
                             $(".stage-1").css("display","none");
                             stage = 2;
@@ -99,9 +102,12 @@ $("*").ready(
                     });
                 }
                 else if (stage === 2) {
-                    send_data(`email_address=${emailInput.val().trim()}&verification_code=${code_input.val().trim()}&stage=2` , response => {
+                    send_data(JSON.stringify({
+                        email : emailInput.val().trim(),
+                        verification_code : code_input.val().trim()
+                    }), "check-verification-code" , response => {
                         let parsed_response = JSON.parse(response);
-                        if(parsed_response.resolvement === true) {
+                        if(parsed_response.status === "success") {
                             //continue process
                             $(".stage-2").css("display","none");
                             stage = 3;
@@ -115,35 +121,24 @@ $("*").ready(
                     });
                 }
                 else {
-                    send_data(`email_address=${emailInput.val().trim()}&password=${passwordInput.val().trim()}&stage=3` , response => {
+                    send_data(JSON.stringify({
+                        email : emailInput.val().trim(),
+                        verification_code : code_input.val().trim(),
+                        password : passwordInput.val().trim()
+                    }), "set-new-password" , response => {
                         let parsed_response = JSON.parse(response);
-                        if(localStorage) {
-                            localStorage.setItem("credentials",response);
-                            if(parsed_response.verified_email === 0) {
-                                location.assign("../verify");
-                            }
-                            else {
-                                localStorage.setItem("credentials", response);
-                                location.assign("../dashboard");
-                            }
+                        if(parsed_response.status === "success") {
+                            swal("Password Reset" , "Your password has been reset. You can now login via the app using your new password." , "success")
+                            .then(() => {
+                                location.assign(".");
+                            })
                         }
                         else {
-                            swal("Session canceled" , "Your browser does not support cookies or it has been disabled. Try enabling all cookies and try again" , "warning");
+                            swal("Error" , "Your password has not been reset due to incorrect values you passed." , "warning");
                         }
                     });
                 }
             }
         );
-        if(!localStorage) {
-            swal("Session canceled" , "Your browser does not support cookies or it has been disabled. Try enabling all cookies and try again" , "warning");
-        }/*
-        if(localStorage.getItem("credentials")) {
-            if(JSON.parse(localStorage.getItem("credentials")).verified_email === 0) {
-                location.assign("../verify");
-            }
-            else {
-                location.assign("../dashboard");
-            }
-        }*/
     }
 );
